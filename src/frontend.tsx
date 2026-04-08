@@ -8,8 +8,6 @@
 import { createRoot } from "react-dom/client";
 import App from "./App";
 
-const env = await fetch("/env.json").then(r => r.json()).catch(() => ({}));
-(window as any).__ENV__ = env;
 
 createRoot(document.getElementById('root')!).render(
     <App />
