@@ -2,7 +2,7 @@
 
 
 import "./index.css";
-import {GithubKanban} from "@malcolm/github-kanban";
+import {GithubKanban} from "@malcolmmacdonald/github-kanban";
 import LandingPage from "./LandingPage";
 
 
