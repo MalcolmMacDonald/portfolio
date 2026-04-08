@@ -129,6 +129,7 @@ const result = await Bun.build({
   minify: true,
   target: "browser",
   sourcemap: "linked",
+  publicPath: process.env.VITE_BASE_PATH ?? "/",
   define: {
     "process.env.NODE_ENV": JSON.stringify("production"),
     "import.meta.env.VITE_GITHUB_TOKEN": JSON.stringify(process.env.VITE_GITHUB_TOKEN ?? ""),
