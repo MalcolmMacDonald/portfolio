@@ -36,7 +36,7 @@ jobs:
         with:
           name: site-main
           github_token: ${{github.token}}
-          repo: MalcolmMacDonald/cursed-apple-guesser
+          repo: ${{ github.repository }}
           run_id: ${{ steps.get-run-id-main.outputs.run-id }}
           path: main
       - name: Get run ID of "Dev" workflow
@@ -53,7 +53,7 @@ jobs:
         with:
           name: site-dev
           github_token: ${{secrets.GITHUB_TOKEN}}
-          repo: MalcolmMacDonald/portfolio
+          repo: ${{ github.repository }}
           run_id: ${{ steps.get-run-id-dev.outputs.run-id }}
           path: dev
 
