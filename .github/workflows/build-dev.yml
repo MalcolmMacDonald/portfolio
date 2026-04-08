@@ -1,0 +1,40 @@
+name: Build Dev
+
+on:
+  push:
+    branches: [ dev ]
+  workflow_run:
+    workflows: [ "Claude Feature Development" ]
+    types: [ completed ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 'dev'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.2.21
+
+      - run: bun install
+
+      - name: Build (development)
+        run: |
+          VITE_BASE_PATH=/dev/ NODE_ENV=development bun run build
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-dev
+          path: dist
+          retention-days: 7
+          overwrite: true

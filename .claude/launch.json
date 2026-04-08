@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "dev",
+      "runtimeExecutable": "bunx",
+      "runtimeArgs": ["--bun", "vite"],
+      "port": 5173
+    },
+    {
+      "name": "start",
+      "runtimeExecutable": "bun",
+      "runtimeArgs": ["src/index.ts"],
+      "port": 3000
+    }
+  ]
+}

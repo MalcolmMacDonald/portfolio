@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__Claude_Preview__preview_start",
+      "Bash(bun run:*)",
+      "Bash(bun -e \"console.log\\(!!process.env.VITE_GITHUB_TOKEN\\)\")",
+      "Bash(bun -e \"console.log\\(!!process.env.BUN_PUBLIC_GITHUB_TOKEN\\)\")"
+    ]
+  }
+}

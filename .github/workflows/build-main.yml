@@ -1,0 +1,37 @@
+﻿name: Build Main
+
+on:
+  push:
+    branches: [ main ]
+  workflow_run:
+    workflows: [ "Merge dev to main" ]
+    types: [ completed ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.2.21
+
+      - run: bun install
+
+      - name: Build (production)
+        run: |
+          VITE_BASE_PATH=/ NODE_ENV=production bun run build
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-main
+          path: dist
+          retention-days: 7

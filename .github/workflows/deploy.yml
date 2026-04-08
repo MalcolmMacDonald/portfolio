@@ -1,0 +1,78 @@
+name: Deploy Pages
+
+on:
+  workflow_run:
+    workflows: ["Build Main", "Build Dev"]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+  actions: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get run ID of "Main" workflow
+        id: get-run-id-main
+        run: |
+          OTHER_REPO="${{ github.repository }}"
+          RUN_ID=`gh run --repo ${OTHER_REPO} list --workflow "Build Main" --json databaseId --jq .[0].databaseId`
+          echo "Detected latest run id of ${RUN_ID} for workflow build main"
+          echo "run-id=${RUN_ID}" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ github.token }}
+      - name: Download main artifact
+        uses: dawidd6/action-download-artifact@v8
+        with:
+          name: site-main
+          github_token: ${{github.token}}
+          repo: MalcolmMacDonald/cursed-apple-guesser
+          run_id: ${{ steps.get-run-id-main.outputs.run-id }}
+          path: main
+      - name: Get run ID of "Dev" workflow
+        id: get-run-id-dev
+        run: |
+          OTHER_REPO="${{ github.repository }}"
+          RUN_ID=`gh run --repo ${OTHER_REPO} list --workflow "Build Dev" --json databaseId --jq .[0].databaseId`
+          echo "Detected latest run id of ${RUN_ID} for workflow build dev"
+          echo "run-id=${RUN_ID}" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ github.token }}
+      - name: Download dev artifact
+        uses: dawidd6/action-download-artifact@v8
+        with:
+          name: site-dev
+          github_token: ${{secrets.GITHUB_TOKEN}}
+          repo: MalcolmMacDonald/portfolio
+          run_id: ${{ steps.get-run-id-dev.outputs.run-id }}
+          path: dev
+
+      - name: Combine
+        run: |
+          mkdir -p public
+
+          # Root (main)
+          cp -r main/* public/
+
+          # Dev
+          mkdir -p public/dev
+          cp -r dev/* public/dev/
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+      - name: Deploy
+        id: deploy
+        uses: actions/deploy-pages@v4
